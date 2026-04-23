@@ -1,0 +1,410 @@
+:root {
+    --accent-neon: #00f3ff;
+    --dark-bg: rgba(11, 15, 25, 0.85); /* Semi-transparent dark for broadcast */
+    --font-main: 'Roboto', sans-serif;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* VERY IMPORTANT: For OBS transparent background */
+    overflow: hidden;
+    font-family: var(--font-main);
+    color: #fff;
+}
+
+/* 
+ * The main wrapper. 
+ * We toggle classes 'mode-fullscreen' or 'mode-lower-third' here 
+ */
+.overlay-wrapper {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* =========================================
+   MODE 1: FULL SCREEN (SIDEBAR)
+   ========================================= */
+.mode-fullscreen {
+    align-items: center;
+    justify-content: flex-end; /* Pin to right side */
+    padding-right: 50px;
+}
+
+.mode-fullscreen .bg-effects {
+    position: absolute;
+    top: 0; right: 0; width: 450px; height: 100vh;
+    background: linear-gradient(90deg, transparent, rgba(0, 50, 100, 0.5) 40%, rgba(0, 0, 0, 0.9) 100%);
+    box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+    z-index: 1;
+}
+
+.mode-fullscreen .content-grid {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    background: rgba(15, 20, 31, 0.95);
+    backdrop-filter: blur(10px);
+    border-left: 2px solid var(--accent-neon);
+    border-radius: 12px 0 0 12px;
+    padding: 30px;
+    box-shadow: -10px 0 30px rgba(0, 243, 255, 0.1);
+    transform: translateX(100%);
+    opacity: 0;
+    animation: slideInRight 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mode-fullscreen .player-visual {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.mode-fullscreen #ov-player-img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #2a3142;
+}
+
+.mode-fullscreen .sport-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--accent-neon);
+    color: #000;
+    padding: 5px 12px;
+    font-weight: 800;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   MODE 2: LOWER THIRD
+   ========================================= */
+.mode-lower-third {
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 50px;
+}
+
+.mode-lower-third .bg-effects {
+    display: none; /* simple lower third ignores big bg */
+}
+
+.mode-lower-third .content-grid {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    max-width: 1200px;
+    height: 140px;
+    background: rgba(15, 20, 31, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 4px solid var(--accent-neon);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    transform: translateY(100%);
+    opacity: 0;
+    animation: slideInUp 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mode-lower-third .player-visual {
+    width: 250px;
+    height: 100%;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+    background: var(--accent-neon);
+}
+
+.mode-lower-third #ov-player-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.1); /* slight zoom to fill clip */
+}
+
+.mode-lower-third .sport-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: #000;
+    color: var(--accent-neon);
+    padding: 2px 8px;
+    font-weight: 800;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+.mode-lower-third .info-panel {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    padding: 0 30px;
+    justify-content: space-between;
+}
+
+.mode-lower-third .player-header h1 { font-size: 42px; margin: 0; }
+.mode-lower-third .stats-row { 
+    display: flex; 
+    margin: 0 auto 0 40px; /* Pushes right content away, stays near header */
+    padding: 10px 20px;
+}
+.mode-lower-third .bid-area { text-align: right; }
+.mode-lower-third .bid-area .bid-title { display: none; }
+.mode-lower-third .bid-value-container { font-size: 48px; }
+.mode-lower-third .highest-bidder { justify-content: flex-end; }
+
+
+/* =========================================
+   COMMON STYLES
+   ========================================= */
+
+.player-header h1 {
+    font-size: 32px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0 0 5px 0;
+    letter-spacing: 1px;
+}
+
+.role-badge {
+    display: inline-block;
+    color: var(--accent-neon);
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.player-stats-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #a0a8b5;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.stats-row {
+    background: rgba(0,0,0,0.4);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+.stat-box { display: flex; justify-content: space-between; align-items: center; }
+.stat-box .label { color: #8b949e; font-size: 12px; font-weight: 700; }
+.stat-box .value { font-size: 18px; font-weight: 900; }
+
+.bid-area {
+    margin-top: 20px;
+}
+.bid-title {
+    color: #8b949e;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+.bid-value-container {
+    color: var(--accent-neon);
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+}
+
+.highest-bidder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    background: #1c2333;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+.highest-bidder .label { font-size: 12px; color: #8b949e; }
+.highest-bidder .team-name { font-size: 18px; font-weight: 800; text-transform: uppercase; }
+
+.timer-box {
+    position: absolute;
+    top: -20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 3px solid var(--accent-neon);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px var(--accent-neon);
+    z-index: 10;
+}
+.timer-box.warning { border-color: #ff0055; color: #ff0055; box-shadow: 0 0 15px #ff0055; animation: ping 1s infinite alternate; }
+
+.stamp-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    z-index: 20;
+}
+.stamp-text {
+    font-size: 80px;
+    font-weight: 900;
+    text-transform: uppercase;
+    border: 8px solid;
+    padding: 10px 40px;
+    border-radius: 15px;
+    opacity: 0;
+    transform: scale(2);
+}
+
+.stamp-sold .stamp-text {
+    color: #00ff88;
+    border-color: #00ff88;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.2) inset;
+    animation: stampDown 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stamp-unsold .stamp-text {
+    color: #ff0055;
+    border-color: #ff0055;
+    text-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+    box-shadow: 0 0 30px rgba(255, 0, 85, 0.2) inset;
+    animation: stampDown 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+/* Animations */
+@keyframes slideInRight { to { transform: translateX(0); opacity: 1; } }
+@keyframes slideInUp { to { transform: translateY(0); opacity: 1; } }
+@keyframes stampDown { to { transform: scale(1); opacity: 1; } }
+@keyframes ping { to { transform: scale(1.1); } }
+@keyframes valueUpdate { 0% { transform: scale(1.2); color: #fff; } 100% { transform: scale(1); color: var(--accent-neon); } }
+
+.animate-value { animation: valueUpdate 0.5s ease; }
+
+/* =========================================
+   TEAMS & PURSES SCREEN
+   ========================================= */
+.teams-wrapper {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    background: rgba(11, 15, 25, 0.95); /* Keep dark, slightly more opaque */
+    backdrop-filter: blur(15px);
+}
+
+.teams-container {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ts-header {
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 3px solid var(--accent-neon);
+    padding-bottom: 20px;
+}
+.ts-header h2 {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent-neon);
+    letter-spacing: 4px;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.ts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    overflow-y: hidden;
+}
+
+.ts-team-card {
+    background: rgba(15, 20, 31, 0.8);
+    border: 1px solid #2a3142;
+    border-top: 4px solid var(--accent-neon);
+    border-radius: 8px;
+    width: 350px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.ts-team-name {
+    font-size: 28px;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.ts-team-purse {
+    text-align: center;
+    background: #1c2333;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+.ts-team-purse .label {
+    display: block;
+    color: #8b949e;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.ts-team-purse .value {
+    color: var(--success);
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.ts-players-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.ts-player-item {
+    background: rgba(0,0,0,0.4);
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ts-player-item .name {
+    font-size: 16px;
+    font-weight: 700;
+}
+.ts-player-item .price {
+    font-size: 14px;
+    color: var(--accent-neon);
+    font-weight: 800;
+}

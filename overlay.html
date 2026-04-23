@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Auction Overlay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/overlay.css">
+</head>
+<body>
+    
+    <!-- The layout wrapper. Classes added dynamically: 'mode-fullscreen' or 'mode-lower-third' -->
+    <div id="overlay-container" class="overlay-wrapper" style="opacity: 0;">
+        
+        <!-- Background Effects -->
+        <div class="bg-effects"></div>
+
+        <div class="content-grid">
+            <!-- Player Visual -->
+            <div class="player-visual">
+                <img id="ov-player-img" src="https://via.placeholder.com/400" alt="Player">
+                <div class="sport-badge" id="ov-sport-name">SPORTS</div>
+            </div>
+
+            <!-- Information Panel -->
+            <div class="info-panel">
+                <div class="player-header">
+                    <h1 id="ov-player-name">PLAYER NAME</h1>
+                    <div class="role-badge" id="ov-player-role">ROLE</div>
+                    <div class="player-stats-text" id="ov-player-stats"></div>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <span class="label">BASE PRICE</span>
+                        <span class="value" id="ov-base-price">0</span>
+                    </div>
+                </div>
+
+                <div class="bid-area">
+                    <div class="bid-title">CURRENT BID</div>
+                    <div class="bid-value-container">
+                        <span class="currency" id="ov-currency">₹</span>
+                        <span class="bid-amount" id="ov-current-bid">0</span>
+                    </div>
+                    
+                    <div class="highest-bidder" id="ov-highest-bidder">
+                        <span class="label">BIDDER:</span>
+                        <span class="team-name" id="ov-team-name">-</span>
+                    </div>
+                </div>
+                
+                <!-- Timer -->
+                <div class="timer-box" id="ov-timer-box" style="display: none;">
+                    <span id="ov-timer-val">30</span>s
+                </div>
+            </div>
+            
+            <!-- Sold Stamp / Unsold Stamp Overlay -->
+            <div class="stamp-overlay" id="ov-stamp" style="display: none;">
+                <div class="stamp-text" id="ov-stamp-text">SOLD</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teams Screen Overlay -->
+    <div id="teams-screen" class="teams-wrapper" style="display: none; opacity: 0;">
+        <div class="bg-effects-teams"></div>
+        <div class="teams-container">
+            <div class="ts-header">
+                <h2>TEAM PURSES AND ROSTERS</h2>
+            </div>
+            <div class="ts-grid" id="ts-grid">
+                <!-- Teams populate here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- GSAP for advanced animations (Optional but good for premium broadcast look. We can use vanilla CSS or GSAP. The prompt requested no frameworks, but GSAP is a library, not a framework. I will stick to pure CSS animations for strict compliance, but CSS will be extremely advanced). -->
+    <script src="js/store.js"></script>
+    <script src="js/overlay.js"></script>
+</body>
+</html>
