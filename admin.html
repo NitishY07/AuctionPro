@@ -52,6 +52,13 @@
                     <label>Currency / Unit Symbol</label>
                     <input type="text" id="setting-currency" placeholder="e.g. ₹, $, Pts">
                 </div>
+                <div class="form-group">
+                    <label>Timer Display</label>
+                    <select id="setting-show-timer">
+                        <option value="yes">Show Timer</option>
+                        <option value="no">Hide Timer</option>
+                    </select>
+                </div>
                 <button id="btn-save-settings" class="btn btn-primary w-100">Save Settings</button>
             </div>
 
@@ -110,6 +117,8 @@
 
                 <div class="bidding-controls">
                     <div class="bid-increments">
+                        <button class="btn btn-bid" data-inc="200">+ 200</button>
+                        <button class="btn btn-bid" data-inc="500">+ 500</button>
                         <button class="btn btn-bid" data-inc="1000">+ 1k</button>
                         <button class="btn btn-bid" data-inc="5000">+ 5k</button>
                         <button class="btn btn-bid" data-inc="10000">+ 10k</button>
@@ -122,9 +131,10 @@
                     
                     <div class="bid-assignment">
                         <label>Assign Bid To Team:</label>
-                        <select id="select-bid-team">
-                            <!-- Teams populate here -->
-                        </select>
+                        <input type="hidden" id="select-bid-team">
+                        <div id="team-bid-buttons" class="team-bid-buttons-grid">
+                            <!-- Team buttons populate here -->
+                        </div>
                     </div>
 
                     <div class="auction-actions">
@@ -172,9 +182,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
-    <script src="js/store.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/auction.js"></script>
+    <script src="js/firebase-config.js?v=2"></script>
+    <script src="js/store.js?v=2"></script>
+    <script src="js/admin.js?v=2"></script>
+    <script src="js/auction.js?v=2"></script>
 </body>
 </html>

@@ -81,10 +81,23 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAuctionConsole(window.store.state);
 
     // --- Bidding Logic --- 
-    function handleBid(amountToAdd) {
-        const teamId = selectTeam.value;
-        if (!teamId) {
-            alert('Please select a team to assign the bid!');
+    let activeIncrement = 1000; // Default increment
+
+    function updateIncrementHighlight() {
+        bidButtons.forEach(btn => {
+            if (parseInt(btn.dataset.inc, 10) === activeIncrement) {
+                btn.classList.add('active-inc');
+            } else {
+                btn.classList.remove('active-inc');
+            }
+        });
+    }
+    updateIncrementHighlight();
+
+    function handleBid(amountToAdd, teamId = null) {
+        const finalTeamId = teamId || selectTeam.value;
+        if (!finalTeamId) {
+            if (!teamId) alert('Please select a team to assign the bid!');
             return;
         }
         
@@ -93,14 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let newBid = state.currentBid;
         // If there's no bidder yet, the first bid might just be the base price.
-        // Usually, the first bid asserts the base price. But for simplicity, we add increments.
         if (!state.currentBidderId && state.currentBid > 0) {
-           newBid = state.currentBid; // First bid is at base price
+           newBid = state.currentBid; 
         } else {
            newBid += amountToAdd;
         }
 
-        window.store.placeBid(teamId, newBid);
+        window.store.placeBid(finalTeamId, newBid);
 
         // Auto reset timer on bid
         const resetVal = parseInt(timerInput.value, 10);
@@ -108,9 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
         startTimer();
     }
 
+    // Expose this for team buttons in admin.js
+    window.placeBidForTeam = (teamId) => {
+        handleBid(activeIncrement, teamId);
+    };
+
     bidButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const inc = parseInt(e.target.dataset.inc, 10);
+            activeIncrement = inc;
+            updateIncrementHighlight();
             handleBid(inc);
         });
     });
@@ -123,7 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
                alert('Please select a team!');
                return;
            }
-           window.store.placeBid(teamId, customValue);
+           // Custom bid now ADDS to current bid
+           const state = window.store.state.auctionState;
+           const newBid = (state.currentBid || 0) + customValue;
+           window.store.placeBid(teamId, newBid);
            customBidVal.value = '';
         }
     });

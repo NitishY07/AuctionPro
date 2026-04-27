@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Timer
-        if (as.timer > 0 && as.status === 'active') {
+        if (set.showTimer !== false && as.timer > 0 && as.status === 'active') {
             els.timerBox.style.display = 'block';
             els.timerVal.innerText = as.timer;
             if (as.timer <= 5) els.timerBox.classList.add('warning');
@@ -129,8 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
             els.curBid.classList.add('animate-value');
         }
 
-        els.bidder.innerText = bidder ? bidder.name : '-';
-
+        if (bidder) {
+            els.bidder.innerText = bidder.name;
+            document.getElementById('ov-highest-bidder').classList.add('active');
+        } else {
+            els.bidder.innerText = '-';
+            document.getElementById('ov-highest-bidder').classList.remove('active');
+        }
         // Check if new player triggered
         if (as.triggerAnimation && as.triggerAnimation !== lastAnimationTs) {
             lastAnimationTs = as.triggerAnimation;
@@ -157,7 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (as.stampTrigger.type === 'sold') {
                 els.stampOverlay.className = 'stamp-overlay stamp-sold';
-                els.stampText.innerText = 'SOLD';
+                if (bidder) {
+                    els.stampText.innerHTML = `SOLD<br><span style="font-size: 32px; color: #fff; text-shadow: 2px 2px 0 #000;">TO ${bidder.name}</span>`;
+                } else {
+                    els.stampText.innerText = 'SOLD';
+                }
             } else {
                 els.stampOverlay.className = 'stamp-overlay stamp-unsold';
                 els.stampText.innerText = 'UNSOLD';

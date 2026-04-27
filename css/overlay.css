@@ -61,18 +61,29 @@ body, html {
     animation: slideInRight 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.mode-fullscreen .player-visual {
+.mode-fullscreen .panel-center {
+    display: flex;
+    flex-direction: column;
     margin-bottom: 20px;
+}
+
+.mode-fullscreen .player-visual {
     position: relative;
+    margin-bottom: 20px;
+    height: 350px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid #2a3142;
 }
 
 .mode-fullscreen #ov-player-img {
     width: 100%;
-    height: 350px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #2a3142;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
 }
+
+.mode-fullscreen .hex-frame { display: none; }
 
 .mode-fullscreen .sport-badge {
     position: absolute;
@@ -88,8 +99,11 @@ body, html {
     letter-spacing: 1px;
 }
 
+.mode-fullscreen .panel-left { margin-bottom: 10px; }
+.mode-fullscreen .panel-left .val-wrapper { display: flex; align-items: baseline; gap: 5px; }
+
 /* =========================================
-   MODE 2: LOWER THIRD
+   MODE 2: LOWER THIRD (PREMIUM BROADCAST)
    ========================================= */
 .mode-lower-third {
     align-items: flex-end;
@@ -97,74 +111,188 @@ body, html {
     padding-bottom: 50px;
 }
 
-.mode-lower-third .bg-effects {
-    display: none; /* simple lower third ignores big bg */
-}
+.mode-lower-third .bg-effects { display: none; }
 
 .mode-lower-third .content-grid {
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: row;
-    width: 80%;
-    max-width: 1200px;
-    height: 140px;
-    background: rgba(15, 20, 31, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 4px solid var(--accent-neon);
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    transform: translateY(100%);
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+    height: 120px;
+    transform: translateY(150%);
     opacity: 0;
     animation: slideInUp 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+    gap: 8px; /* Parallel spacing */
 }
 
-.mode-lower-third .player-visual {
-    width: 250px;
-    height: 100%;
+/* Base Panel Styles */
+.mode-lower-third .panel-left,
+.mode-lower-third .panel-center,
+.mode-lower-third .panel-right {
     position: relative;
-    clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
-    background: var(--accent-neon);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100px;
+    background: transparent; /* Background moved to ::before */
 }
+
+/* Pseudo-elements for Backgrounds (Allows Overflow for Player Image) */
+.mode-lower-third .panel-left::before,
+.mode-lower-third .panel-center::before,
+.mode-lower-third .panel-right::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #111520, #0a0d14);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    border-bottom: 4px solid var(--accent-neon);
+    z-index: -1;
+}
+
+/* Left Panel */
+.mode-lower-third .panel-left {
+    flex: 1;
+    max-width: 420px;
+    align-items: center;
+    padding-right: 40px; 
+}
+.mode-lower-third .panel-left::before {
+    clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%);
+}
+
+/* Center Panel (Player Popout) */
+.mode-lower-third .panel-center {
+    width: 480px;
+    align-items: center;
+    z-index: 5;
+    padding-top: 10px;
+    margin-left: -32px; /* Pull left to interlock with Left Panel */
+}
+.mode-lower-third .panel-center::before {
+    clip-path: polygon(40px 0, calc(100% - 40px) 0, 100% 100%, 0 100%);
+    border-bottom: 4px solid #fff;
+}
+
+/* Right Panel */
+.mode-lower-third .panel-right {
+    flex: 1;
+    max-width: 420px;
+    align-items: center;
+    padding-left: 40px; 
+    margin-left: -32px; /* Pull left to interlock with Center Panel */
+}
+.mode-lower-third .panel-right::before {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 40px 100%);
+}
+
+/* Premium Player Popout */
+.mode-lower-third .player-visual {
+    position: absolute;
+    bottom: 90px; /* Moves it completely out of the center box so text is visible */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    height: 320px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.mode-lower-third .hex-frame {
+    position: absolute;
+    bottom: 0;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, #111520 80%);
+    border: 4px solid #d4af37;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Glowing ring behind the hex frame */
+.mode-lower-third .hex-frame::before {
+    content: '';
+    position: absolute;
+    top: -10px; left: -10px; right: -10px; bottom: -10px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: rotateSlow 20s linear infinite;
+}
+
+@keyframes rotateSlow { 100% { transform: rotate(360deg); } }
 
 .mode-lower-third #ov-player-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.1); /* slight zoom to fill clip */
+    width: 280px;
+    max-height: 300px;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8));
+    z-index: 2;
+    margin-bottom: -15px; /* Sink slightly into the ring */
 }
 
-.mode-lower-third .sport-badge {
+.mode-lower-third .sport-badge { display: none; }
+
+/* Text Alignment inside lower third */
+.mode-lower-third .player-header {
+    text-align: center;
+    z-index: 10;
+    margin-top: 10px;
+}
+.mode-lower-third .player-header h1 {
+    font-size: 34px;
+    margin: 0;
+    line-height: 1.2;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+.mode-lower-third .player-header .role-badge,
+.mode-lower-third .player-header .player-stats-text { display: none; } 
+
+.mode-lower-third .stat-box { display: flex; flex-direction: column; align-items: center; }
+.mode-lower-third .stat-box .label { font-size: 18px; color: #d4af37; letter-spacing: 3px; font-weight: 800; text-transform: uppercase; margin-bottom: -5px; }
+.mode-lower-third .stat-box .val-wrapper { display: flex; align-items: baseline; gap: 5px; }
+.mode-lower-third .stat-box .currency { font-size: 38px; font-weight: 900; color: #fff; }
+.mode-lower-third .stat-box .value { font-size: 56px; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
+
+.mode-lower-third .bid-area { display: flex; flex-direction: column; align-items: center; }
+.mode-lower-third .bid-area .bid-title { font-size: 18px; color: var(--accent-neon); letter-spacing: 3px; font-weight: 800; text-transform: uppercase; margin-bottom: -5px; }
+.mode-lower-third .bid-value-container { font-size: 56px; font-weight: 900; color: #fff; display: flex; align-items: baseline; gap: 5px; text-shadow: 0 0 15px rgba(0,243,255,0.5); }
+.mode-lower-third .bid-value-container .currency { font-size: 38px; color: #fff; }
+.mode-lower-third .highest-bidder-flag { 
     position: absolute;
-    bottom: 10px;
-    left: 10px;
-    background: #000;
-    color: var(--accent-neon);
-    padding: 2px 8px;
-    font-weight: 800;
-    border-radius: 4px;
-    font-size: 10px;
-}
-
-.mode-lower-third .info-panel {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    padding: 0 30px;
-    justify-content: space-between;
-}
-
-.mode-lower-third .player-header h1 { font-size: 42px; margin: 0; }
-.mode-lower-third .stats-row { 
+    bottom: calc(100% - 5px); /* Anchor the bottom of the flag to the top of the panel */
+    left: 50%;
+    transform: translateX(-50%) translateY(15px); /* Start slightly low for slide-up animation */
     display: flex; 
-    margin: 0 auto 0 40px; /* Pushes right content away, stays near header */
-    padding: 10px 20px;
+    flex-direction: column;
+    align-items: center; /* Center the text */
+    background: rgba(10, 15, 25, 0.95);
+    padding: 6px 20px; 
+    border-radius: 6px 6px 0 0; /* Rounded top edges, flat bottom connects to panel */
+    border-top: 3px solid var(--accent-neon);
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+    z-index: 15;
+    opacity: 0; 
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy pop up */
+    white-space: nowrap; /* Prevent long team names from wrapping to multiple lines */
 }
-.mode-lower-third .bid-area { text-align: right; }
-.mode-lower-third .bid-area .bid-title { display: none; }
-.mode-lower-third .bid-value-container { font-size: 48px; }
-.mode-lower-third .highest-bidder { justify-content: flex-end; }
+/* Active class added by JS when bidder exists */
+.mode-lower-third .highest-bidder-flag.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+.mode-lower-third .highest-bidder-flag .label { font-size: 12px; color: #fff; font-weight: 600; letter-spacing: 2px;}
+.mode-lower-third .highest-bidder-flag .team-name { font-size: 22px; font-weight: 900; color: var(--accent-neon); text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,1);}
 
 
 /* =========================================

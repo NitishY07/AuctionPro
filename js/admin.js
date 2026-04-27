@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         overlayMode: document.getElementById('setting-overlay-mode'),
         activeScreen: document.getElementById('setting-active-screen'),
         currency: document.getElementById('setting-currency'),
+        showTimer: document.getElementById('setting-show-timer'),
         saveSettings: document.getElementById('btn-save-settings'),
 
         formTeam: document.getElementById('form-add-team'),
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(document.activeElement !== els.overlayMode) els.overlayMode.value = state.settings.overlayMode;
         if(document.activeElement !== els.activeScreen) els.activeScreen.value = state.settings.activeScreen || 'auction';
         if(document.activeElement !== els.currency) els.currency.value = state.settings.currency || '₹';
+        if(document.activeElement !== els.showTimer) els.showTimer.value = state.settings.showTimer === false ? 'no' : 'yes';
         
         // Update role dropdown
         const currentSelectedRole = els.playerRole.value;
@@ -77,11 +79,22 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
 
-        // Update select team dropdown for bidding
-        const currentSel = els.selectBidTeam.value;
-        els.selectBidTeam.innerHTML = '<option value="">Select Team...</option>' + 
-            state.teams.map(t => `<option value="${t.id}">${t.name} (Rem: ${curr}${t.budget - t.spent})</option>`).join('');
-        if(state.teams.find(t=>t.id===currentSel)) els.selectBidTeam.value = currentSel;
+        // Update team buttons for bidding
+        const teamButtonsContainer = document.getElementById('team-bid-buttons');
+        if (teamButtonsContainer && els.selectBidTeam) {
+            const currentSel = els.selectBidTeam.value;
+            teamButtonsContainer.innerHTML = state.teams.map(t => {
+                const words = t.name.trim().split(/\s+/);
+                let shortName = words.length > 1 ? words.map(w => w[0].toUpperCase()).join('') : t.name.substring(0, 3).toUpperCase();
+                if (shortName.length > 4) shortName = shortName.substring(0, 4);
+                
+                const isSelected = t.id === currentSel ? 'selected' : '';
+                return `<button type="button" class="btn-team-select ${isSelected}" data-team-id="${t.id}" title="${t.name}">${shortName}</button>`;
+            }).join('');
+            
+            // Re-apply value if it still exists
+            if(state.teams.find(t=>t.id===currentSel)) els.selectBidTeam.value = currentSel;
+        }
     }
 
     function renderPlayers(state) {
@@ -135,13 +148,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. DOM Events
+
+    // Team bidding buttons
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-team-select')) {
+            const teamId = e.target.dataset.teamId;
+            if (els.selectBidTeam) els.selectBidTeam.value = teamId;
+            
+            document.querySelectorAll('.btn-team-select').forEach(b => b.classList.remove('selected'));
+            e.target.classList.add('selected');
+
+            // Trigger bid automatically with the active increment
+            if (window.placeBidForTeam) {
+                window.placeBidForTeam(teamId);
+            }
+        }
+    });
+
     els.saveSettings.addEventListener('click', () => {
         window.store.updateSettings(
             els.sportName.value, 
             els.roles.value, 
             els.overlayMode.value,
             els.activeScreen.value,
-            els.currency.value || '₹'
+            els.currency.value || '₹',
+            els.showTimer.value === 'yes'
         );
     });
 

@@ -359,12 +359,48 @@ input:focus, select:focus {
     font-size: 16px;
 }
 .btn-bid:hover { border-color: var(--accent-neon); color: var(--accent-neon); }
+.btn-bid.active-inc {
+    background: var(--accent-neon);
+    color: #000;
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+}
 .custom-bid { display: flex; gap: 10px; align-items: center; background: #1c2333; border-radius: 30px; padding: 5px 5px 5px 15px;}
 .custom-bid input { width: 100px; height: 30px; padding: 0; background: transparent; border: none; }
 .custom-bid input:focus { box-shadow: none; }
 
 .bid-assignment select {
     width: 200px;
+}
+
+.team-bid-buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+.btn-team-select {
+    padding: 10px 15px;
+    background: #1c2333;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    text-align: center;
+}
+.btn-team-select:hover {
+    border-color: var(--accent-neon);
+    background: rgba(0, 243, 255, 0.1);
+}
+.btn-team-select.selected {
+    background: var(--accent-neon);
+    color: #000;
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
 }
 
 .auction-actions {

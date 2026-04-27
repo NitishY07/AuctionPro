@@ -6,7 +6,8 @@ const DEFAULT_STATE = {
         roles: ['Batsman', 'Bowler', 'All Rounder', 'Wicket Keeper'],
         overlayMode: 'fullscreen', // fullscreen or lower-third
         activeScreen: 'auction', // 'auction' or 'teams'
-        currency: '₹' // custom currency or points
+        currency: '₹', // custom currency or points
+        showTimer: true // toggle for displaying timer on overlay
     },
     teams: [],
     players: [],
@@ -89,12 +90,13 @@ class Store {
     }
 
     /* --- Actions --- */
-    updateSettings(sportName, rolesStr, overlayMode, activeScreen = 'auction', currency = '₹') {
+    updateSettings(sportName, rolesStr, overlayMode, activeScreen = 'auction', currency = '₹', showTimer = true) {
         this.state.settings.sportName = sportName;
         this.state.settings.roles = rolesStr.split(',').map(s => s.trim()).filter(s => s);
         this.state.settings.overlayMode = overlayMode;
         this.state.settings.activeScreen = activeScreen;
         this.state.settings.currency = currency;
+        this.state.settings.showTimer = showTimer;
         this.saveState();
     }
 
@@ -269,9 +271,22 @@ class Store {
     }
 
     resetApp() {
-        if(confirm("Are you sure you want to reset EVERYTHING in this tournament?")) {
-            this.state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            this.saveState();
+        if(window.confirm("WARNING: Are you sure you want to completely wipe all players, teams, and settings for this tournament? This cannot be undone.")) {
+            // Hard reset the state
+            const freshState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            this.state = freshState;
+            
+            // Push to Firebase and immediately refresh the browser
+            if (this.dbRef) {
+                this.dbRef.set(freshState).then(() => {
+                    window.location.reload(true);
+                }).catch(err => {
+                    console.error("Firebase reset failed:", err);
+                    window.location.reload(true);
+                });
+            } else {
+                window.location.reload(true);
+            }
         }
     }
 }

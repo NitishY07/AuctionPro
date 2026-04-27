@@ -16,25 +16,37 @@
         <div class="bg-effects"></div>
 
         <div class="content-grid">
-            <!-- Player Visual -->
-            <div class="player-visual">
-                <img id="ov-player-img" src="https://via.placeholder.com/400" alt="Player">
-                <div class="sport-badge" id="ov-sport-name">SPORTS</div>
+            
+            <!-- Left Panel (Base Price) -->
+            <div class="panel-left">
+                <div class="stat-box">
+                    <span class="label">BASE PRICE</span>
+                    <div class="val-wrapper">
+                        <span class="currency">₹</span>
+                        <span class="value" id="ov-base-price">0</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Information Panel -->
-            <div class="info-panel">
+            <!-- Center Panel (Player & Name) -->
+            <div class="panel-center">
+                <div class="player-visual">
+                    <div class="hex-frame"></div>
+                    <img id="ov-player-img" src="https://via.placeholder.com/400" alt="Player">
+                    <div class="sport-badge" id="ov-sport-name">SPORTS</div>
+                </div>
                 <div class="player-header">
                     <h1 id="ov-player-name">PLAYER NAME</h1>
                     <div class="role-badge" id="ov-player-role">ROLE</div>
                     <div class="player-stats-text" id="ov-player-stats"></div>
                 </div>
-                
-                <div class="stats-row">
-                    <div class="stat-box">
-                        <span class="label">BASE PRICE</span>
-                        <span class="value" id="ov-base-price">0</span>
-                    </div>
+            </div>
+
+            <!-- Right Panel (Current Bid) -->
+            <div class="panel-right">
+                <div class="highest-bidder-flag" id="ov-highest-bidder">
+                    <span class="label">BIDDER:</span>
+                    <span class="team-name" id="ov-team-name">-</span>
                 </div>
 
                 <div class="bid-area">
@@ -42,11 +54,6 @@
                     <div class="bid-value-container">
                         <span class="currency" id="ov-currency">₹</span>
                         <span class="bid-amount" id="ov-current-bid">0</span>
-                    </div>
-                    
-                    <div class="highest-bidder" id="ov-highest-bidder">
-                        <span class="label">BIDDER:</span>
-                        <span class="team-name" id="ov-team-name">-</span>
                     </div>
                 </div>
                 
@@ -79,8 +86,8 @@
     <!-- GSAP for advanced animations (Optional but good for premium broadcast look. We can use vanilla CSS or GSAP. The prompt requested no frameworks, but GSAP is a library, not a framework. I will stick to pure CSS animations for strict compliance, but CSS will be extremely advanced). -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
-    <script src="js/store.js"></script>
-    <script src="js/overlay.js"></script>
+    <script src="js/firebase-config.js?v=2"></script>
+    <script src="js/store.js?v=2"></script>
+    <script src="js/overlay.js?v=2"></script>
 </body>
 </html>
