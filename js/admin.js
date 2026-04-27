@@ -35,6 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
         selectBidTeam: document.getElementById('select-bid-team')
     };
 
+    // Set Tournament ID in header
+    let tId = null;
+    if (window.store && window.store.tournamentId) {
+        tId = window.store.tournamentId;
+    } else {
+        const urlParams = new URLSearchParams(window.location.search);
+        tId = urlParams.get('t') || localStorage.getItem('active_tournament');
+    }
+
+    if (tId) {
+        const tIdDisplay = document.getElementById('display-tournament-id');
+        if (tIdDisplay) {
+            tIdDisplay.textContent = 'TRN: ' + tId.toUpperCase();
+        }
+    }
+
     // 1. Render functions
     function renderSettings(state) {
         if(document.activeElement !== els.sportName) els.sportName.value = state.settings.sportName;
@@ -112,10 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Init Render
-    fullRender(window.store.state);
-    
-    // Subscribe to changes
-    window.store.on('stateChanged', fullRender);
+    if (window.store && window.store.state) {
+        fullRender(window.store.state);
+        // Subscribe to changes
+        window.store.on('stateChanged', fullRender);
+    }
 
     // 2. DOM Events
     els.saveSettings.addEventListener('click', () => {

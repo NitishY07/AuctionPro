@@ -3,172 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Sport Auction Pro</title>
+    <title>Tournament Gateway | Auction Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: var(--bg-dark);
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-light);
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .gateway-container {
+            background: rgba(20, 20, 25, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+        }
+
+        .gateway-container::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-neon), transparent, var(--accent-neon));
+            z-index: -1;
+            border-radius: 16px;
+            opacity: 0.3;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--accent-neon);
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            outline: none;
+        }
+
+        .btn-join {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            background: var(--accent-neon);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-join:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+            background: #fff;
+        }
+
+        .notice {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <header class="app-header">
+
+    <div class="gateway-container">
         <div class="logo">AUCTION<span>PRO</span></div>
-        <div class="header-controls">
-            <button id="btn-export" class="btn btn-outline">Export Data</button>
-            <label for="import-file" class="btn btn-outline">Import Data</label>
-            <input type="file" id="import-file" accept=".json,.csv,.xlsx" style="display: none;">
-            <button id="btn-reset-app" class="btn btn-danger">Reset App</button>
+        <div class="subtitle">Cloud-Synced Multi-Tournament System</div>
+
+        <div class="form-group">
+            <label for="admin-name">Full Name</label>
+            <input type="text" id="admin-name" placeholder="e.g. John Doe" required autocomplete="off">
         </div>
-    </header>
 
-    <main class="dashboard-grid">
-        <!-- Sidebar Configuration -->
-        <aside class="sidebar">
-            <div class="panel">
-                <h2>General Settings</h2>
-                <div class="form-group">
-                    <label>Sport Name</label>
-                    <input type="text" id="setting-sport" placeholder="e.g., Cricket, Football">
-                </div>
-                <div class="form-group">
-                    <label>Player Roles (Comma separated)</label>
-                    <input type="text" id="setting-roles" placeholder="Striker, Defender, Midfielder">
-                </div>
-                <div class="form-group">
-                    <label>Overlay Mode (Auction)</label>
-                    <select id="setting-overlay-mode">
-                        <option value="fullscreen">Full Screen</option>
-                        <option value="lower-third">Lower Third</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Active Overlay Screen</label>
-                    <select id="setting-active-screen" style="border-color: var(--accent-neon); color: var(--accent-neon);">
-                        <option value="auction">Live Auction Center</option>
-                        <option value="teams">Teams & Purses (Roster)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Currency / Unit Symbol</label>
-                    <input type="text" id="setting-currency" placeholder="e.g. ₹, $, Pts">
-                </div>
-                <button id="btn-save-settings" class="btn btn-primary w-100">Save Settings</button>
-            </div>
+        <div class="form-group">
+            <label for="admin-email">Email Address</label>
+            <input type="email" id="admin-email" placeholder="e.g. john@example.com" required autocomplete="email">
+        </div>
 
-            <div class="panel mt">
-                <h2>Teams Setup</h2>
-                <form id="form-add-team" class="compact-form">
-                    <input type="text" id="team-name" placeholder="Team Name" required>
-                    <input type="number" id="team-budget" placeholder="Budget (e.g. 100000)" required>
-                    <button type="submit" class="btn btn-secondary">Add Team</button>
-                </form>
-                <div class="list-container" id="list-teams">
-                    <!-- Teams populate here -->
-                </div>
-            </div>
-            
-            <div class="panel mt">
-                <h2>Add Player</h2>
-                <form id="form-add-player" class="compact-form">
-                    <input type="text" id="player-name" placeholder="Player Name" required>
-                    <select id="player-role" required>
-                        <!-- Dynamic Roles -->
-                    </select>
-                    <input type="number" id="player-base-price" placeholder="Base Price" required>
-                    <input type="text" id="player-stats" placeholder="Stats (e.g. M: 100 • R: 50)">
-                    <input type="text" id="player-image" placeholder="Image URL (Optional)">
-                    <button type="submit" class="btn btn-secondary">Add Player</button>
-                </form>
-            </div>
-            
-            <div class="panel auto-height mt">
-                <h2>Auction History</h2>
-                <div class="history-log" id="history-log">
-                    <!-- Logs populate here -->
-                </div>
-            </div>
-        </aside>
+        <div class="form-group">
+            <label for="admin-org">Organization / Team</label>
+            <input type="text" id="admin-org" placeholder="e.g. IPL Operations" required autocomplete="organization">
+        </div>
 
-        <!-- Main Auction Area -->
-        <section class="main-content">
-            <div class="auction-console">
-                <div class="console-header">
-                    <h2>Live Auction Center</h2>
-                    <div class="timer-controls">
-                        <input type="number" id="timer-input" value="30" class="timer-input">
-                        <button id="btn-timer-start" class="btn btn-success">Start Timer</button>
-                        <button id="btn-timer-pause" class="btn btn-warning">Pause</button>
-                        <button id="btn-timer-reset" class="btn btn-outline">Reset</button>
-                        <div id="countdown-display" class="countdown">30s</div>
-                    </div>
-                </div>
+        <div class="form-group">
+            <label for="tournament-id">Tournament ID (Create or Join)</label>
+            <input type="text" id="tournament-id" placeholder="e.g. IPL2024" required autocomplete="off">
+        </div>
 
-                <div class="current-auction-display" id="current-player-card">
-                    <!-- Default State -->
-                    <div class="empty-state">No Player Selected for Auction</div>
-                </div>
+        <button class="btn-join" id="btn-enter">Sign Up & Enter Auction Center</button>
 
-                <div class="bidding-controls">
-                    <div class="bid-increments">
-                        <button class="btn btn-bid" data-inc="1000">+ 1k</button>
-                        <button class="btn btn-bid" data-inc="5000">+ 5k</button>
-                        <button class="btn btn-bid" data-inc="10000">+ 10k</button>
-                        <button class="btn btn-bid" data-inc="50000">+ 50k</button>
-                        <div class="custom-bid">
-                            <input type="number" id="custom-bid-val" placeholder="Custom Bid">
-                            <button id="btn-custom-bid" class="btn btn-outline">Set</button>
-                        </div>
-                    </div>
-                    
-                    <div class="bid-assignment">
-                        <label>Assign Bid To Team:</label>
-                        <select id="select-bid-team">
-                            <!-- Teams populate here -->
-                        </select>
-                    </div>
+        <div class="notice">
+            A unique Tournament ID keeps your data separate and secure. Anyone with the same ID will sync in real-time.
+        </div>
+    </div>
 
-                    <div class="auction-actions">
-                        <button id="btn-sell" class="btn btn-sell">SELL PLAYER</button>
-                        <button id="btn-unsold" class="btn btn-unsold">MARK UNSOLD</button>
-                        <button id="btn-undo" class="btn btn-warning" style="display: none; padding: 15px 30px; font-size: 18px;">UNDO LAST</button>
-                    </div>
-                </div>
-            </div>
+    <!-- Add Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 
-            <!-- Players Pool -->
-            <div class="panel mt players-pool">
-                <div class="panel-header">
-                    <h2>Players Pool ('<span id="pool-count">0</span>' Total)</h2>
-                    <div class="filters">
-                        <select id="filter-status">
-                            <option value="all">All</option>
-                            <option value="pending">Pending</option>
-                            <option value="sold">Sold</option>
-                            <option value="unsold">Unsold</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Role</th>
-                                <th>Base Price</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-players">
-                            <!-- Players populate here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    </main>
+    <script>
+        document.getElementById('btn-enter').addEventListener('click', () => {
+            const tId = document.getElementById('tournament-id').value.trim().toUpperCase();
+            const aName = document.getElementById('admin-name').value.trim();
+            const aEmail = document.getElementById('admin-email').value.trim();
+            const aOrg = document.getElementById('admin-org').value.trim();
 
-        <!-- Added SheetJS for parsing .xls/.xlsx files natively in the browser -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="js/store.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/auction.js"></script>
+            if (!tId || !aName || !aEmail) {
+                alert("Please fill in your Name, Email, and a Tournament ID.");
+                return;
+            }
+
+            // Save to local storage for the admin dashboard to pick up
+            localStorage.setItem('active_tournament', tId);
+            localStorage.setItem('admin_name', aName);
+            localStorage.setItem('admin_email', aEmail);
+            localStorage.setItem('admin_org', aOrg);
+
+            // Attempt to save user data to Firebase if it's configured
+            if (window.firebaseDb && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                const safeEmail = aEmail.replace(/[.#$[\]]/g, '_'); // Firebase keys can't contain . # $ [ ]
+                const userRef = window.firebaseDb.ref('users/' + safeEmail);
+                
+                // Save globally under users
+                userRef.set({
+                    name: aName,
+                    email: aEmail,
+                    organization: aOrg,
+                    lastTournament: tId,
+                    lastLogin: new Date().toISOString()
+                });
+
+                // Also save under the specific tournament
+                const adminRef = window.firebaseDb.ref('tournaments/' + tId + '/adminDetails');
+                adminRef.set({
+                    name: aName,
+                    email: aEmail,
+                    organization: aOrg
+                }).then(() => {
+                    window.location.href = `admin.html?t=${tId}`;
+                }).catch(err => {
+                    console.error("Firebase save failed", err);
+                    window.location.href = `admin.html?t=${tId}`;
+                });
+            } else {
+                // If Firebase not configured, just redirect
+                window.location.href = `admin.html?t=${tId}`;
+            }
+        });
+
+        // Allow pressing Enter key
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('btn-enter').click();
+            }
+        });
+    </script>
 </body>
 </html>

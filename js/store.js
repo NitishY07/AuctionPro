@@ -1,4 +1,4 @@
-// store.js - State management wrapper around localStorage
+// store.js - State management via Firebase Realtime Database
 
 const DEFAULT_STATE = {
     settings: {
@@ -24,32 +24,60 @@ const DEFAULT_STATE = {
 
 class Store {
     constructor() {
-        this.state = this.loadState();
+        this.tournamentId = this.getTournamentId();
         
-        // Listen to native storage events (from other tabs)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'auction_app_state') {
-                this.state = JSON.parse(e.newValue);
-                this.emit('stateChanged', this.state);
+        if (!this.tournamentId) {
+            // Redirect to gateway if no tournament ID is found and we are not already on index.html
+            if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+                window.location.href = 'index.html';
             }
+            return;
+        }
+
+        this.dbRef = window.firebaseDb.ref('tournaments/' + this.tournamentId);
+        this.state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        this.listeners = {};
+        
+        // Listen to Firebase real-time updates
+        this.dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Merge arrays properly (Firebase might remove empty arrays)
+                this.state = {
+                    ...DEFAULT_STATE,
+                    ...data,
+                    teams: data.teams || [],
+                    players: data.players || [],
+                    history: data.history || []
+                };
+            } else {
+                // If tournament doesn't exist yet, initialize it
+                this.state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                this.saveState();
+            }
+            this.emit('stateChanged', this.state);
         });
     }
 
-    loadState() {
-        const stored = localStorage.getItem('auction_app_state');
-        if (stored) {
-            return JSON.parse(stored);
-        }
-        return JSON.parse(JSON.stringify(DEFAULT_STATE)); // Deep copy default
+    getTournamentId() {
+        // Try to get from URL parameter first (important for overlay)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlTid = urlParams.get('t');
+        if (urlTid) return urlTid.toUpperCase();
+
+        // Fallback to localStorage (mostly for admin)
+        const lsTid = localStorage.getItem('active_tournament');
+        if (lsTid) return lsTid.toUpperCase();
+
+        return null;
     }
 
     saveState() {
-        localStorage.setItem('auction_app_state', JSON.stringify(this.state));
-        this.emit('stateChanged', this.state);
+        // Push state to Firebase
+        this.dbRef.set(this.state);
     }
 
     // Simple event emitter
-    listeners = {};
     on(event, callback) {
         if (!this.listeners[event]) this.listeners[event] = [];
         this.listeners[event].push(callback);
@@ -98,14 +126,13 @@ class Store {
     }
     
     importPlayersData(playersArr) {
-        // Prevent duplicates by checking case-insensitive names
         const existingNames = new Set(this.state.players.map(p => p.name.trim().toLowerCase()));
         
         const uniqueNewPlayers = playersArr.filter(p => {
             const nameKey = p.name.trim().toLowerCase();
             if (existingNames.has(nameKey)) return false;
             
-            existingNames.add(nameKey); // Prevent duplicates inside the imported array itself
+            existingNames.add(nameKey); 
             return true;
         });
 
@@ -147,13 +174,11 @@ class Store {
         const player = this.state.players.find(p => p.id === this.state.auctionState.currentPlayerId);
         if (!team || !player) return;
 
-        // Validation - prevent overspending
         if (team.budget - team.spent < amount) {
             alert(`Team ${team.name} doesn't have enough budget!`);
             return;
         }
         
-        // Set state to active if bidding starts
         if(this.state.auctionState.status === 'waiting') {
             this.state.auctionState.status = 'active';
         }
@@ -171,7 +196,6 @@ class Store {
         const teamId = this.state.auctionState.currentBidderId;
         const price = this.state.auctionState.currentBid;
 
-        // Update Player
         const pIdx = this.state.players.findIndex(p => p.id === playerId);
         if (pIdx > -1) {
             this.state.players[pIdx].status = 'sold';
@@ -179,7 +203,6 @@ class Store {
             this.state.players[pIdx].soldPrice = price;
         }
 
-        // Update Team Budget
         const tIdx = this.state.teams.findIndex(t => t.id === teamId);
         if (tIdx > -1) {
             this.state.teams[tIdx].spent += price;
@@ -217,7 +240,6 @@ class Store {
         const player = this.state.players[pIdx];
 
         if (player.status === 'sold') {
-            // Refund Team
             const tIdx = this.state.teams.findIndex(t => t.id === player.soldTo);
             if (tIdx > -1) {
                 this.state.teams[tIdx].spent -= player.soldPrice;
@@ -230,15 +252,13 @@ class Store {
             return; 
         }
 
-        // Reset Player
         this.state.players[pIdx].status = 'pending';
         this.state.players[pIdx].soldTo = null;
         this.state.players[pIdx].soldPrice = null;
 
-        // Reset Auction State to active
         this.state.auctionState.status = 'active';
         this.state.auctionState.stampTrigger = null; 
-        this.state.auctionState.triggerAnimation = Date.now(); // Re-trigger entry animation
+        this.state.auctionState.triggerAnimation = Date.now(); 
         
         this.saveState();
     }
@@ -249,14 +269,21 @@ class Store {
     }
 
     resetApp() {
-        // Keeps teams, wipes players and history, clears auction state
-        if(confirm("Are you sure you want to reset everything? Players and Auction History will be deleted.")) {
+        if(confirm("Are you sure you want to reset EVERYTHING in this tournament?")) {
             this.state = JSON.parse(JSON.stringify(DEFAULT_STATE));
             this.saveState();
-            location.reload();
         }
     }
 }
 
-// Global instance
-window.store = new Store();
+// Check if we are on the gateway page, if so don't instantiate store yet
+if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+    // We are on gateway, do nothing here.
+} else {
+    // Only init if config is provided
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        window.store = new Store();
+    } else {
+        alert("Firebase is not configured! Please open js/firebase-config.js and add your keys.");
+    }
+}
